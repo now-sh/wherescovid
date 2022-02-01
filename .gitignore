@@ -6,3 +6,5 @@ ignoredirmessage
 node_modules
 dist
 public
+# ignore commit message
+.gitcommit
