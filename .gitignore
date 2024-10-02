@@ -6,6 +6,7 @@ ignoredirmessage
 node_modules
 dist
 public
+.parcel-cache
 # ignore commit message
 .gitcommit
 .vercel
