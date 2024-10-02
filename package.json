@@ -7,9 +7,7 @@
     "start": "parcel src/index.html",
     "build": "NODE_ENV=production parcel build src/index.html --no-source-maps --out-dir public",
     "dev": "NODE_ENV=development parcel build src/index.html --no-source-maps --out-dir dist && lite-server --baseDir=dist",
-    "github": "NODE_ENV=production parcel build src/index.html --no-source-maps --out-dir docs",
-    "deploy": "gitcommit deploy; vue-cli-service build && vercel deploy && vercel deploy --prod",
-    "now": "vercel deploy --prod"
+    "deploy": "gitcommit deploy; NODE_ENV=production parcel build src/index.html --no-source-maps --out-dir public && vercel deploy && vercel deploy --prod"
   },
   "keywords": [],
   "author": "CasjaysDev <git-admin@casjaysdev.pro> (https://wherescovid.casjay.coffee)",
