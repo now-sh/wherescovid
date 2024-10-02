@@ -2,7 +2,7 @@
 
 A simple website to show you the nearest reported case of COVID-19.
 
-View the live website here: [https://wherescovid.casjay.now.sh](https://wherescovid.casjay.now.sh)
+View the live website here: [https://wherescovid.casjay.coffee](https://wherescovid.casjay.coffee)
 
 ## Tech
 
