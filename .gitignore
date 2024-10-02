@@ -8,3 +8,4 @@ dist
 public
 # ignore commit message
 .gitcommit
+.vercel
