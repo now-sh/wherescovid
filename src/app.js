@@ -1,4 +1,4 @@
-import 'bootstrap';
+// Bootstrap CSS is imported via SCSS, no JS needed
 
 const url = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/1/query?f=json&where=Confirmed%20%3E%200&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Confirmed%20desc%2CCountry_Region%20asc%2CProvince_State%20asc&resultOffset=0&resultRecordCount=1000&cacheHint=false';
 const maxDiffMs = 1000 * 60 * 60;
@@ -44,7 +44,8 @@ function getData() {
 
 function getDistances([features, location]) {
   const distances = features
-    .filter(({ attributes }) => (attributes.Confirmed - attributes.Recovered - attributes.Deaths) > 0)
+    // Changed: Show all locations with confirmed cases (not just active)
+    .filter(({ attributes }) => attributes.Confirmed > 0)
     .map(({ attributes }) => {
     attributes.Active = attributes.Confirmed - attributes.Recovered - attributes.Deaths;
     attributes.distance_kms = getDistance(location.latitude, location.longitude, attributes.Lat, attributes.Long_);
