@@ -1,7 +1,0 @@
-{
-  "port": 3001,
-  "server": { "baseDir": "./public" },
-  "browser": ["google chrome", "firefox"],
-  "cors": true,
-  "open": false
-}
