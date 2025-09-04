@@ -17,13 +17,14 @@
   <link rel="stylesheet" href="styles/main.scss">
 </head>
 <body>
-  <h1>
-    😷 🏥 🦠 🧫 <br />
-  </h1>
-  <h3>
-    COVID-19.... Where is it?
-  </h3>
-  <div class="location">
+  <div class="container-fluid">
+    <h1>
+      😷 🏥 🦠 🧫 <br />
+    </h1>
+    <h3>
+      COVID-19.... Where is it?
+    </h3>
+    <div class="location">
     <p class="info-item"><span class="label">Your Location:</span> <span class="value" id="your-location">Loading...</span></p>
     <p class="error" id="locationError" style="display:none">Unable to automatically determine your location. Click the button below to use precise location.</p>
     <div>
@@ -40,7 +41,7 @@
     <p class="info-item"><span class="label">Last Case Update:</span> <span class="value" id="updated">Loading...</span></p>
     <p class="info-item"><span class="label">Last Data Request:</span> <span class="value" id="lastDataRequest">Loading...</span></p>
     <p class="error" id="casesError" style="display:none">No cases found. Click the button below to refresh cases.</p>
-    <small class="note small">Note: This is the closest location with <i>active</i> cases.</small>
+    <small class="note small">Note: This shows historical COVID-19 data (last updated March 2023).</small>
     <div>
       <button type="button" class="btn btn-danger" id="refreshButton">Refresh Cases</a>
     </div>
@@ -62,7 +63,7 @@
     <div class="text-center border-danger" style="font-size:125%" >
       <a href="https://www.cdc.gov/flu/pandemic-resources/1918-commemoration/pandemic-timeline-1918.htm" target="_blank" rel="noopener">Repeat of the 1918 Pandemic</a>
     </div><br />
-    <div class="text-center border-danger" role="alert"">
+    <div class="text-center border-danger" role="alert">
       Your Location provided by: <a href="https://ipapi.co" target="_blank" rel="noopener">https://ipapi.co</a> and <a href="https://nominatim.openstreetmap.org/"  target="_blank" rel="noopener">Nominatim</a>
     </div>
     <div class="more-info">
@@ -109,6 +110,7 @@ window.cookieconsent.initialise({
 <!-- End EU compliant -->
 
 </footer>
+  </div>
 <script src="app.js"></script>
 </body>
 </html>
