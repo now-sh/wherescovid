@@ -2,26 +2,29 @@
   "name": "wherescovid",
   "version": "1.0.0",
   "description": "Covid-19 cases",
-  "main": "src/index.html",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "start": "parcel src/index.html",
-    "build": "NODE_ENV=production parcel build src/index.html --no-source-maps --out-dir public",
-    "dev": "NODE_ENV=development parcel build src/index.html --no-source-maps --out-dir dist && lite-server --baseDir=dist",
-    "github": "NODE_ENV=production parcel build src/index.html --no-source-maps --out-dir docs",
-    "now": "now"
+    "build": "NODE_ENV=production parcel build src/index.html --no-source-maps --dist-dir public",
+    "dev": "parcel src/index.html --dist-dir dist",
+    "github": "NODE_ENV=production parcel build src/index.html --no-source-maps --dist-dir docs",
+    "serve": "node server.js",
+    "serve:build": "npm run build && npm run serve",
+    "now": "vercel && vercel --prod"
   },
   "keywords": [],
   "author": "CasjaysDev <git-admin@casjaysdev.com> (https://wherescovid.casjay.coffee)",
   "license": "MIT",
   "dependencies": {
-    "bootstrap": "^4.4.1",
-    "jquery": "^3.4.1",
-    "parcel": "^1.12.4",
-    "popper.js": "^1.16.1"
+    "bootstrap": "^5.3.3",
+    "express": "^4.21.2"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
-    "lite-server": "^2.5.4",
-    "sass": "^1.26.2"
+    "parcel": "^2.12.0",
+    "eslint": "^8.57.0",
+    "sass": "^1.77.8",
+    "@parcel/transformer-sass": "^2.12.0"
   }
 }
