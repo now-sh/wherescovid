@@ -1,13 +1,23 @@
-// Bootstrap CSS is imported via SCSS, no JS needed
+/**
+ * COVID-19 Location Tracker
+ * Modern JavaScript with Dracula Theme
+ * @version 2.0.0
+ * @author Jason M. Hempstead (Casjay)
+ */
 
-const url = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/1/query?f=json&where=Confirmed%20%3E%200&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Confirmed%20desc%2CCountry_Region%20asc%2CProvince_State%20asc&resultOffset=0&resultRecordCount=1000&cacheHint=false';
-const maxDiffMs = 1000 * 60 * 60;
+// Configuration
+const CONFIG = {
+  API_URL: 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/1/query?f=json&where=Confirmed%20%3E%200&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Confirmed%20desc%2CCountry_Region%20asc%2CProvince_State%20asc&resultOffset=0&resultRecordCount=1000&cacheHint=false',
+  CACHE_DURATION_MS: 1000 * 60 * 60, // 1 hour
+  VERSION: '2.0.0',
+  GEOLOCATION_TIMEOUT: 10000
+};
 
-const version = '1.2.0';
-
-if (localStorage.version !== version) {
+// Clear cache if version changed
+if (localStorage.version !== CONFIG.VERSION) {
+  console.log('Version updated, clearing cache...');
   localStorage.clear();
-  localStorage.version = version;
+  localStorage.version = CONFIG.VERSION;
 }
 
 const elements = {
@@ -26,20 +36,40 @@ const elements = {
   active: document.querySelector('#active'),
 };
 
-function getData() {
-  const cacheDiff = Date.now() - localStorage.cacheTime;
-  elements.lastDataRequest.textContent = new Date(+localStorage.cacheTime).toLocaleString();
-  if (localStorage.cacheTime && cacheDiff < maxDiffMs && localStorage.cacheData) return Promise.resolve(JSON.parse(localStorage.cacheData));
-  return fetch(url)
-    .then(response => response.json())
-    .then(json => {
-      localStorage.cacheData = JSON.stringify(json.features);
-      localStorage.cacheTime = Date.now();
-      elements.lastDataRequest.textContent = new Date(+localStorage.cacheTime).toLocaleString();
-      return json.features;
-    }).catch(() => {
-      return [];
-    });
+async function getData() {
+  try {
+    const cacheDiff = Date.now() - localStorage.cacheTime;
+    const lastRequestTime = localStorage.cacheTime ? new Date(+localStorage.cacheTime).toLocaleString() : 'Never';
+    elements.lastDataRequest.textContent = lastRequestTime;
+    
+    // Return cached data if fresh
+    if (localStorage.cacheTime && cacheDiff < CONFIG.CACHE_DURATION_MS && localStorage.cacheData) {
+      console.log('Using cached COVID data');
+      return JSON.parse(localStorage.cacheData);
+    }
+    
+    console.log('Fetching fresh COVID data...');
+    const response = await fetch(CONFIG.API_URL);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const json = await response.json();
+    
+    // Cache the data
+    localStorage.cacheData = JSON.stringify(json.features);
+    localStorage.cacheTime = Date.now();
+    elements.lastDataRequest.textContent = new Date().toLocaleString();
+    
+    console.log(`Fetched ${json.features?.length || 0} COVID data points`);
+    return json.features || [];
+    
+  } catch (error) {
+    console.error('Error fetching COVID data:', error);
+    elements.lastDataRequest.textContent = 'Error fetching data';
+    return [];
+  }
 }
 
 function getDistances([features, location]) {
@@ -176,7 +206,8 @@ function render(useFineLocation) {
     .then(getDistances)
     .then(showInfo);
 
-  setTimeout(render, maxDiffMs);
+  // Auto-refresh every hour
+  setTimeout(render, CONFIG.CACHE_DURATION_MS);
 }
 
 render(false);
