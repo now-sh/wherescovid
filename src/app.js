@@ -7,7 +7,9 @@
 
 // Configuration
 const CONFIG = {
-  API_URL: 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/1/query?f=json&where=Confirmed%20%3E%200&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Confirmed%20desc%2CCountry_Region%20asc%2CProvince_State%20asc&resultOffset=0&resultRecordCount=1000&cacheHint=false',
+  // Use disease.sh API which has working data
+  COUNTRIES_API: 'https://disease.sh/v3/covid-19/countries',
+  STATES_API: 'https://disease.sh/v3/covid-19/states', 
   CACHE_DURATION_MS: 1000 * 60 * 60, // 1 hour
   VERSION: '2.0.0',
   GEOLOCATION_TIMEOUT: 10000
@@ -48,22 +50,56 @@ async function getData() {
       return JSON.parse(localStorage.cacheData);
     }
     
-    console.log('Fetching fresh COVID data...');
-    const response = await fetch(CONFIG.API_URL);
+    console.log('Fetching fresh COVID data from disease.sh...');
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // Fetch both countries and US states data
+    const [countriesResponse, statesResponse] = await Promise.all([
+      fetch(CONFIG.COUNTRIES_API),
+      fetch(CONFIG.STATES_API)
+    ]);
+    
+    if (!countriesResponse.ok || !statesResponse.ok) {
+      throw new Error(`HTTP error! Countries: ${countriesResponse.status}, States: ${statesResponse.status}`);
     }
     
-    const json = await response.json();
+    const [countries, states] = await Promise.all([
+      countriesResponse.json(),
+      statesResponse.json()
+    ]);
     
-    // Cache the data
-    localStorage.cacheData = JSON.stringify(json.features);
+    // Transform data to match expected format
+    const transformedData = [
+      ...countries.map(country => ({
+        Country_Region: country.country,
+        Province_State: null,
+        Lat: country.countryInfo.lat,
+        Long_: country.countryInfo.long,
+        Confirmed: country.cases,
+        Deaths: country.deaths,
+        Recovered: country.recovered,
+        Active: country.active,
+        Last_Update: new Date(country.updated).toISOString()
+      })),
+      ...states.map(state => ({
+        Country_Region: 'US',
+        Province_State: state.state,
+        Lat: 39.8283, // US center lat for states (approximate)
+        Long_: -98.5795, // US center long for states (approximate)
+        Confirmed: state.cases,
+        Deaths: state.deaths,
+        Recovered: state.recovered || 0,
+        Active: state.cases - state.deaths - (state.recovered || 0),
+        Last_Update: new Date(state.updated).toISOString()
+      }))
+    ].filter(item => item.Confirmed > 0);
+    
+    // Cache the transformed data
+    localStorage.cacheData = JSON.stringify(transformedData);
     localStorage.cacheTime = Date.now();
     elements.lastDataRequest.textContent = new Date().toLocaleString();
     
-    console.log(`Fetched ${json.features?.length || 0} COVID data points`);
-    return json.features || [];
+    console.log(`Fetched ${transformedData.length} COVID data points`);
+    return transformedData;
     
   } catch (error) {
     console.error('Error fetching COVID data:', error);
@@ -73,16 +109,22 @@ async function getData() {
 }
 
 function getDistances([features, location]) {
+  console.log(`Processing ${features.length} COVID data points for location:`, location);
+  
   const distances = features
-    // Changed: Show all locations with confirmed cases (not just active)
-    .filter(({ attributes }) => attributes.Confirmed > 0)
-    .map(({ attributes }) => {
-    attributes.Active = attributes.Confirmed - attributes.Recovered - attributes.Deaths;
-    attributes.distance_kms = getDistance(location.latitude, location.longitude, attributes.Lat, attributes.Long_);
-    attributes.distance_miles = attributes.distance_kms * 0.6213712;
-    return attributes;
-  });
-  distances.sort((a, b) => a.distance_kms - b.distance_kms);
+    .filter(item => item.Confirmed > 0 && item.Lat && item.Long_)
+    .map(item => {
+      const distance_kms = getDistance(location.latitude, location.longitude, item.Lat, item.Long_);
+      return {
+        ...item,
+        distance_kms,
+        distance_miles: distance_kms * 0.6213712
+      };
+    })
+    .sort((a, b) => a.distance_kms - b.distance_kms);
+  
+  console.log(`Found ${distances.length} locations with data, closest:`, distances[0]?.Country_Region);
+  
   return {
     location,
     closest: distances[0],
@@ -170,26 +212,35 @@ function setAllCaseInfo(value) {
 }
 
 function showInfo({ location, closest }) {
+  console.log('Displaying info for location:', location, 'closest:', closest);
+  
   const unknown = 'Unknown';
-  if (location.city === unknown) {
-    elements.locationError.style.display = '';
-    elements.yourLocation.textContent = unknown;
+  const locationDisplay = [location.city, location.region, location.country].filter(i => i).join(', ');
+  
+  elements.yourLocation.textContent = locationDisplay || unknown;
+  
+  if (location.city === unknown || !location.city) {
+    elements.locationError.style.display = 'block';
     setAllCaseInfo(unknown);
   } else if (!closest) {
-    elements.yourLocation.textContent = [location.city, location.region_code, location.country].filter(i => i).join(', ');
-    setAllCaseInfo(unknown);
-    elements.casesError.style.display = '';
+    setAllCaseInfo('No data available');
+    elements.casesError.style.display = 'block';
   } else {
-    elements.yourLocation.textContent = [location.city, location.region_code, location.country].filter(i => i).join(', ');
+    elements.locationError.style.display = 'none';
+    elements.casesError.style.display = 'none';
+    
+    // Format numbers with thousands separators
+    const formatNumber = (num) => Number(num).toLocaleString();
+    
     setTimeout(() => {
       elements.closestLocation.textContent = [closest.Province_State, closest.Country_Region].filter(i => i).join(', ');
       elements.distance.textContent = `${closest.distance_miles.toFixed(1)} miles`;
-      elements.confirmed.textContent = closest.Confirmed;
-      elements.active.textContent = closest.Active;
-      elements.deaths.textContent = closest.Deaths;
-      elements.recovered.textContent = closest.Recovered;
+      elements.confirmed.textContent = formatNumber(closest.Confirmed);
+      elements.active.textContent = formatNumber(closest.Active);
+      elements.deaths.textContent = formatNumber(closest.Deaths);
+      elements.recovered.textContent = formatNumber(closest.Recovered);
       elements.updated.textContent = new Date(closest.Last_Update).toLocaleString();
-    }, 500);
+    }, 100); // Reduced delay
   }
 }
 
