@@ -399,7 +399,7 @@ a:focus {
   }
 }
 
-.value:has-text("Loading...") {
+.value[data-loading="true"] {
   animation: pulse 2s infinite;
   color: var(--muted-color);
 }
