@@ -1,35 +1,39 @@
 {
   "name": "location-covid-tracker",
   "version": "2.0.0",
-  "description": "Location-based COVID-19 tracker with Dracula theme",
+  "description": "Location-based COVID-19 tracker with Vue 3 and Dracula theme",
+  "type": "module",
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "start": "parcel src/index.html --port 3000",
-    "build": "rm -rf public && NODE_OPTIONS='--max-old-space-size=4096' parcel build src/index.html --dist-dir public --no-source-maps --no-cache",
-    "dev": "parcel src/index.html --dist-dir dist --port 3000",
-    "github": "rm -rf docs && NODE_OPTIONS='--max-old-space-size=4096' parcel build src/index.html --dist-dir docs --no-source-maps --no-cache",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "lint": "eslint . --fix",
     "serve": "node server.js",
-    "serve:build": "npm run build && npm run serve",
-    "deploy": "gitcommit deploy && npm run build && vercel --prod",
-    "lint": "eslint src/ --fix",
-    "clean": "rm -rf .parcel-cache dist public docs node_modules/.cache"
+    "deploy": "gitcommit deploy && npm run build && vercel && vercel --prod"
   },
-  "keywords": ["covid19", "location", "tracker", "geolocation", "dracula-theme"],
+  "keywords": ["covid19", "location", "tracker", "geolocation", "vue3", "dracula-theme"],
   "author": "Jason M. Hempstead (Casjay) <git-admin@casjaysdev.com> (https://location.covid.casjay.coffee)",
   "license": "MIT",
   "dependencies": {
+    "vue": "^3.5.13",
     "bootstrap": "^5.3.3",
     "express": "^4.21.2"
   },
   "devDependencies": {
-    "parcel": "^2.8.3",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "vite": "^7.1.4",
+    "vitest": "^3.2.4",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^26.1.0",
     "eslint": "^9.35.0",
     "globals": "^15.14.0",
     "@eslint/js": "^9.16.0",
-    "sass": "^1.81.1",
-    "@parcel/transformer-sass": "^2.8.3"
+    "eslint-plugin-vue": "^10.4.0",
+    "eslint-config-prettier": "^9.1.0"
   }
 }
