@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <!-- Primary Meta Tags -->
+  <title>COVID-19 Location Tracker - Find Cases Near You</title>
+  <meta name="description" content="Find COVID-19 cases near your location using geolocation. Track confirmed cases, deaths, and recoveries in your area with real-time data.">
+  <meta name="keywords" content="COVID-19, location tracker, geolocation, coronavirus near me, cases tracker, COVID map">
+  <meta name="author" content="Jason M. Hempstead (Casjay)">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://location.covid.casjay.coffee/">
+  <meta property="og:title" content="COVID-19 Location Tracker - Find Cases Near You">
+  <meta property="og:description" content="Find COVID-19 cases near your location using geolocation with real-time data.">
+  <meta property="og:site_name" content="COVID-19 Location Tracker">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://location.covid.casjay.coffee/">
+  <meta property="twitter:title" content="COVID-19 Location Tracker">
+  <meta property="twitter:description" content="Find COVID-19 cases near your location using geolocation.">
+  
+  <!-- Theme Color (Dracula Purple) -->
+  <meta name="theme-color" content="#bd93f9">
+  <meta name="color-scheme" content="dark">
+  
+  <!-- Security Headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' ws: wss: https://disease.sh https://ipapi.co https://nominatim.openstreetmap.org https://www.google-analytics.com; font-src 'self' data:;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🦠</text></svg>">
+  
+  <!-- Preconnect to External Services -->
+  <link rel="dns-prefetch" href="//disease.sh">
+  <link rel="dns-prefetch" href="//ipapi.co">
+  <link rel="dns-prefetch" href="//nominatim.openstreetmap.org">
+  
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-936146-4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-936146-4', {
+      anonymize_ip: true,
+      cookie_expires: 0
+    });
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"></script>
+  
+  <!-- Cookie Consent (EU GDPR) -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script>
+  <script>
+    window.addEventListener("load", function(){
+      window.cookieconsent.initialise({
+        "palette": {
+          "popup": {
+            "background": "#282a36",
+            "text": "#f8f8f2"
+          },
+          "button": {
+            "background": "#bd93f9",
+            "text": "#282a36",
+            "border": "#bd93f9"
+          }
+        },
+        "content": {
+          "message": "In accordance with the EU GDPR law, this message is being displayed. We use minimal analytics and no personal data storage. ",
+          "dismiss": "I Understand",
+          "link": "Privacy Policy",
+          "href": "https://casjaysdev.pro/policy/"
+        }
+      })
+    });
+  </script>
+
+  <!-- No JS Fallback -->
+  <noscript>
+    <div style="text-align: center; padding: 2rem; background: #282a36; color: #f8f8f2; font-family: sans-serif;">
+      <h1>JavaScript Required</h1>
+      <p>This application requires JavaScript to determine your location and display COVID-19 statistics.</p>
+      <p>Please enable JavaScript in your browser and refresh the page.</p>
+    </div>
+  </noscript>
+</body>
+</html>
