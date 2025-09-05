@@ -1,22 +1,66 @@
 import js from '@eslint/js'
+import pluginVue from 'eslint-plugin-vue'
 import globals from 'globals'
+import configPrettier from 'eslint-config-prettier'
 
 export default [
   {
-    files: ['src/**/*.js'],
+    files: ['**/*.{js,mjs,jsx,vue}'],
+  },
+
+  {
+    ignores: [
+      '**/dist/**',
+      '**/public/**', 
+      '**/node_modules/**',
+      '**/*.min.js',
+      '**/coverage/**',
+    ],
+  },
+
+  js.configs.recommended,
+  ...pluginVue.configs['flat/recommended'],
+
+  {
+    files: ['**/*.vue'],
     languageOptions: {
-      ecmaVersion: 2022,
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
+
+  {
+    files: ['**/*.{js,mjs,jsx}'],
+    languageOptions: {
+      ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
         ...globals.browser,
-        ...globals.es2021
-      }
+        ...globals.node,
+      },
     },
+  },
+
+  {
+    files: ['**/vite.config.{js,mjs,jsx}', '**/vitest.config.{js,mjs,jsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        __dirname: 'readonly',
+      },
+    },
+  },
+
+  {
     rules: {
+      'vue/multi-word-component-names': 'off',
+      'vue/no-unused-vars': 'error',
       'no-unused-vars': 'warn',
       'no-console': 'off',
-      'prefer-const': 'error'
-    }
+      'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    },
   },
-  js.configs.recommended
+
+  configPrettier,
 ]
